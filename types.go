@@ -1,9 +1,6 @@
 package pwsafe
 
-import (
-	"net/url"
-	"time"
-)
+import "time"
 
 type Headers struct {
 	VersionMajor, VersionMinor uint8
@@ -21,7 +18,7 @@ type Record struct {
 	Notes        string
 	Password     string
 	CreationTime time.Time
-	Url          *url.URL
+	Url          string
 	Email        string
 }
 

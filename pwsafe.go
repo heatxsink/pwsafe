@@ -10,13 +10,10 @@ import (
 	"hash"
 	"io"
 	"log"
-	"net/url"
 	"os"
 	"time"
 
 	"golang.org/x/crypto/twofish"
-
-	"github.com/kr/pretty"
 )
 
 type psv3Header struct {
@@ -63,7 +60,6 @@ func ParseFile(inputfile, password string) (*Safe, error) {
 	for {
 		eof := safe.readRecord(infile, engine, hmacEngine)
 		if eof {
-			fmt.Println("break out")
 			break
 		}
 	}
@@ -82,9 +78,8 @@ func (safe *Safe) readHeaders(r io.Reader, engine cipher.BlockMode, hmacEngine h
 		ftype, fdata, ferr := safe.readField(r, engine)
 		if ferr != nil {
 			log.Fatalln(ferr)
-		} else {
-			pretty.Println("Hdr Field", ftype, fdata, string(fdata))
 		}
+		//pretty.Println("Hdr Field", ftype, fdata, string(fdata))
 		switch ftype {
 		case 0x00:
 			safe.Headers.VersionMajor = fdata[1]
@@ -110,8 +105,6 @@ func parseTimeT(data []byte) (time.Time, error) {
 	case 4:
 		var timet uint32
 		binary.Read(buf, binary.LittleEndian, &timet)
-		fmt.Println(timet)
-		fmt.Println(time.Unix(int64(timet), 0))
 		return time.Unix(int64(timet), 0), nil
 	case 8:
 		var timet uint64
@@ -127,11 +120,9 @@ func (safe *Safe) readRecord(r io.Reader, engine cipher.BlockMode, hmacEngine ha
 		ftype, fdata, ferr := safe.readField(r, engine)
 		if ferr != nil && ferr != io.EOF {
 			log.Fatalln(ferr)
-		} else {
-			pretty.Println("Rec Field", ftype, fdata, string(fdata))
 		}
+		//pretty.Println("Rec Field", ftype, fdata, string(fdata))
 		if ferr == io.EOF {
-			fmt.Println("Found eof")
 			return true
 		}
 		switch ftype {
@@ -150,7 +141,7 @@ func (safe *Safe) readRecord(r io.Reader, engine cipher.BlockMode, hmacEngine ha
 		case 0x07:
 			record.CreationTime, _ = parseTimeT(fdata)
 		case 0x08:
-			record.Url, _ = url.Parse(string(fdata))
+			record.Url = string(fdata)
 		case 0x09:
 			record.Email = string(fdata)
 		case 0xFF:
@@ -170,7 +161,6 @@ func (safe *Safe) readField(r io.Reader, engine cipher.BlockMode) (fieldType uin
 	}
 
 	if string(block[:]) == "PWS3-EOFPWS3-EOF" {
-		fmt.Println("found eof field")
 		return 0, nil, io.EOF
 	}
 
