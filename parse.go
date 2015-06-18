@@ -121,10 +121,10 @@ func (safe *Safe) readRecord(r io.Reader, engine cipher.BlockMode, hmacEngine ha
 		if ferr != nil && ferr != io.EOF {
 			log.Fatalln(ferr)
 		}
-		//pretty.Println("Rec Field", ftype, fdata, string(fdata))
 		if ferr == io.EOF {
 			return true
 		}
+		//pretty.Println("Rec Field", ftype, fdata, string(fdata))
 		switch ftype {
 		case 0x01:
 			copy(record.UUID[:], fdata)
@@ -140,9 +140,9 @@ func (safe *Safe) readRecord(r io.Reader, engine cipher.BlockMode, hmacEngine ha
 			record.Password = string(fdata)
 		case 0x07:
 			record.CreationTime, _ = parseTimeT(fdata)
-		case 0x08:
+		case 0x0d:
 			record.Url = string(fdata)
-		case 0x09:
+		case 0x14:
 			record.Email = string(fdata)
 		case 0xFF:
 			safe.Records = append(safe.Records, record)
@@ -177,7 +177,7 @@ func (safe *Safe) readField(r io.Reader, engine cipher.BlockMode) (fieldType uin
 
 	binary.Read(buf, binary.LittleEndian, &clearField)
 
-	if clearField.Length < 11 {
+	if clearField.Length <= 11 {
 		return clearField.Type, clearField.Data[:clearField.Length], nil
 	}
 
