@@ -90,6 +90,7 @@ func main() {
 
 	inputMode := false
 	valBuffer := bytes.Buffer{}
+	numBuffer := bytes.Buffer{}
 	var selRecord *pwsafe.Record
 	var selField *string
 	var inputPrompt string
@@ -101,13 +102,13 @@ Main:
 				switch e.Ch {
 				case 'q':
 					break Main
-				case '0', '1', '2':
-					buf := bytes.Buffer{}
-					buf.WriteRune(e.Ch)
-					selIndex, _ := strconv.ParseInt(buf.String(), 10, 64)
+				case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
+					numBuffer.WriteRune(e.Ch)
+				case '#':
+					selIndex, _ := strconv.ParseInt(numBuffer.String(), 10, 64)
 					selRecord = &safe.Records[selIndex]
 					selField = nil
-					buf.Reset()
+					numBuffer.Reset()
 				case 'a':
 					selIndex := len(safe.Records)
 					safe.Records = append(safe.Records, pwsafe.Record{})
@@ -220,7 +221,7 @@ func getRecordDetail(record pwsafe.Record) string {
 func getRecordList(safe *pwsafe.Safe) []string {
 	rlist := make([]string, 0)
 	for idx, record := range safe.Records {
-		rlist = append(rlist, fmt.Sprintf("[%d] %s/%s", idx, record.Group, record.Title))
+		rlist = append(rlist, fmt.Sprintf("[%02d#] %s/%s", idx, record.Group, record.Title))
 	}
 	rlist = append(rlist, "[a] Add Record")
 	return rlist
