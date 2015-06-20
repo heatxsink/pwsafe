@@ -94,6 +94,7 @@ func main() {
 	var selRecord *pwsafe.Record
 	var selField *string
 	var inputPrompt string
+	var startIndex int
 Main:
 	for {
 		select {
@@ -109,6 +110,16 @@ Main:
 					selRecord = &safe.Records[selIndex]
 					selField = nil
 					numBuffer.Reset()
+				case 'j':
+					startIndex++
+					rlist := getRecordList(safe)
+					recordlist.Items = rlist[startIndex:]
+				case 'k':
+					if startIndex > 1 {
+						startIndex--
+						rlist := getRecordList(safe)
+						recordlist.Items = rlist[startIndex:]
+					}
 				case 'a':
 					selIndex := len(safe.Records)
 					safe.Records = append(safe.Records, pwsafe.Record{})
@@ -116,7 +127,9 @@ Main:
 					selRecord.UUID = uuid.NewV1()
 					selRecord.CreationTime = time.Now()
 					selField = nil
-					recordlist.Items = getRecordList(safe)
+					rlist := getRecordList(safe)
+					recordlist.Items = rlist[startIndex:]
+					recordlist.Border.Label = fmt.Sprintf("Records (%d)", len(safe.Records))
 				case 'g':
 					selField = &selRecord.Group
 					inputPrompt = "Group: "
@@ -168,7 +181,8 @@ Main:
 					valBuffer.Reset()
 					inputMode = false
 					inputbox.Text = ""
-					recordlist.Items = getRecordList(safe)
+					rlist := getRecordList(safe)
+					recordlist.Items = rlist[startIndex:]
 				} else if e.Key == termui.KeyEsc {
 					valBuffer.Reset()
 					inputMode = false
