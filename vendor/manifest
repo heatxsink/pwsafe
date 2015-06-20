@@ -1,0 +1,42 @@
+{
+	"version": 0,
+	"dependencies": [
+		{
+			"importpath": "github.com/gizak/termui",
+			"repository": "https://github.com/gizak/termui",
+			"revision": "9d0302382ddeed86cbedb11049dcab10f8131d15",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/mattn/go-runewidth",
+			"repository": "https://github.com/mattn/go-runewidth",
+			"revision": "5890272cd41c5103531cd7b79e428d99c9e97f76",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/nsf/termbox-go",
+			"repository": "https://github.com/nsf/termbox-go",
+			"revision": "675ffd907b7401b8a709a5ef2249978af5616bb2",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/howeyc/gopass",
+			"repository": "https://github.com/howeyc/gopass",
+			"revision": "2c70fa70727c953c51695f800f25d6b44abb368e",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/satori/go.uuid",
+			"repository": "https://github.com/satori/go.uuid",
+			"revision": "afe1e2ddf0f05b7c29d388a3f8e76cb15c2231ca",
+			"branch": "master"
+		},
+		{
+			"importpath": "golang.org/x/crypto/twofish",
+			"repository": "https://go.googlesource.com/crypto",
+			"revision": "1e856cbfdf9bc25eefca75f83f25d55e35ae72e0",
+			"branch": "master",
+			"path": "/twofish"
+		}
+	]
+}
