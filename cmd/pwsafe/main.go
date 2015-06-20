@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"path/filepath"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -16,6 +17,18 @@ import (
 	"github.com/howeyc/gopass"
 	"github.com/satori/go.uuid"
 )
+
+// ByGroupTitle
+type ByGroupTitle []pwsafe.Record
+
+func (b ByGroupTitle) Len() int      { return len(b) }
+func (b ByGroupTitle) Swap(i, j int) { b[i], b[j] = b[j], b[i] }
+func (b ByGroupTitle) Less(i, j int) bool {
+	if b[i].Group == b[j].Group {
+		return b[i].Title < b[j].Title
+	}
+	return b[i].Group < b[j].Group
+}
 
 func main() {
 	pfile := flag.String("f", "", "psafe3 file")
@@ -28,6 +41,8 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
+
+	sort.Sort(ByGroupTitle(safe.Records))
 
 	errt := termui.Init()
 	if errt != nil {
