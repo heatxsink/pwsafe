@@ -62,7 +62,7 @@ func main() {
 	leftpar.HasBorder = false
 
 	recordlist := termui.NewList()
-	recordlist.Height = termui.TermHeight() - 9
+	recordlist.Height = termui.TermHeight() - 5
 	recordlist.Items = getRecordList(safe)
 	recordlist.Border.Label = fmt.Sprintf("Records (%d)", len(safe.Records))
 
@@ -73,13 +73,14 @@ func main() {
 	inputbox := termui.NewPar("")
 	inputbox.Height = 3
 	inputbox.Border.Label = "Input Box ([Enter] to save, [Esc] to cancel)"
+	inputrow := termui.NewRow(termui.NewCol(12, 0, inputbox))
 
 	commandinfo := termui.NewPar(strings.Join([]string{
-		"Select record by typing the index number",
-		"Edit field by typing field marker",
+		"Select record by typing the index number. Edit field by typing field marker.",
 	}, "\n"))
-	commandinfo.Height = 4
+	commandinfo.Height = 3
 	commandinfo.Border.Label = "Help"
+	commandrow := termui.NewRow(termui.NewCol(12, 0, commandinfo))
 
 	termui.Body.AddRows(
 		termui.NewRow(
@@ -90,12 +91,7 @@ func main() {
 			termui.NewCol(6, 0, recordlist),
 			termui.NewCol(6, 0, recorddetail),
 		),
-		termui.NewRow(
-			termui.NewCol(12, 0, inputbox),
-		),
-		termui.NewRow(
-			termui.NewCol(12, 0, commandinfo),
-		),
+		commandrow,
 	)
 
 	termui.Body.Align()
@@ -221,9 +217,17 @@ Main:
 				termui.Body.Width = termui.TermWidth()
 				termui.Body.Align()
 			}
+
 			if selRecord != nil {
 				recorddetail.Text = getRecordDetail(*selRecord)
 			}
+
+			if inputMode {
+				termui.Body.Rows[2] = inputrow
+			} else {
+				termui.Body.Rows[2] = commandrow
+			}
+			termui.Body.Align()
 			termui.Render(termui.Body)
 		}
 	}
