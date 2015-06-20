@@ -12,6 +12,8 @@ import (
 	"io"
 	"log"
 	"os"
+	"os/user"
+	"time"
 
 	"github.com/satori/go.uuid"
 	"golang.org/x/crypto/twofish"
@@ -25,6 +27,18 @@ func OutputFile(outputfile, password string, safe Safe) error {
 		log.Fatal(err)
 	}
 	defer outfile.Close()
+
+	safe.Headers.LastSave = time.Now()
+	safe.Headers.ProgramSave = "pwsafe 0.1"
+
+	user, uerr := user.Current()
+	if uerr == nil && user.Username != "" {
+		safe.Headers.User = user.Username
+	}
+
+	if host, herr := os.Hostname(); herr == nil {
+		safe.Headers.Host = host
+	}
 
 	fmt.Fprint(outfile, "PWS3")
 
