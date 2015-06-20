@@ -173,6 +173,8 @@ Main:
 					valBuffer.Reset()
 					inputMode = false
 					inputbox.Text = ""
+				} else if e.Key == termui.KeySpace {
+					valBuffer.WriteRune(' ')
 				} else if e.Key == termui.KeyBackspace || e.Ch == '' {
 					s := valBuffer.String()
 					valBuffer = bytes.Buffer{}
