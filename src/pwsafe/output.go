@@ -21,6 +21,7 @@ import (
 
 const iterations = 2048
 
+// Write the password safe to an encrypted psafe3 file
 func OutputFile(outputfile, password string, safe Safe) error {
 	outfile, err := os.Create(outputfile)
 	if err != nil {

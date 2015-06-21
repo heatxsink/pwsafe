@@ -13,6 +13,7 @@ import (
 	"golang.org/x/crypto/twofish"
 )
 
+// Enumeration of field types
 type FieldType uint8
 
 const (
@@ -44,6 +45,7 @@ const (
 	RecTypeEmail        FieldType = 0x14
 )
 
+// Field structure for read/write to file
 type Field struct {
 	Type FieldType
 	Data []byte
@@ -53,6 +55,7 @@ var (
 	ErrBadFileType     = errors.New("invalid pwsafe file")
 	ErrInvalidPassword = errors.New("invalid file password")
 	ErrHMACFailed      = errors.New("hmac verification failed")
+	EOF                = errors.New("end of field data")
 )
 
 type psv3Header struct {
@@ -63,6 +66,7 @@ type psv3Header struct {
 	B1, B2, B3, B4, IV [16]byte
 }
 
+// A Reader parses fields from an encrypted psafe3 file.
 type Reader struct {
 	r              io.Reader
 	password       string
@@ -70,6 +74,12 @@ type Reader struct {
 	hmacHash       hash.Hash
 }
 
+// Returns a new Reader that reads from r
+//
+// The header section storing the salt and keys is read from r to verify the file is
+// actually a psafe3 file and the password is correct.
+//
+// All reads from this reader will return unencrypted data.
 func NewReader(r io.Reader, password string) (*Reader, error) {
 	reader := &Reader{r: r, password: password}
 
@@ -100,6 +110,10 @@ func NewReader(r io.Reader, password string) (*Reader, error) {
 	return reader, nil
 }
 
+// Read one field from r
+//
+// A return of EOF marks the end of field data.
+// Call Verify to verify the integrity of the file after EOF.
 func (r *Reader) ReadField() (Field, error) {
 	var field Field
 	var block [16]byte
@@ -109,7 +123,7 @@ func (r *Reader) ReadField() (Field, error) {
 	}
 
 	if string(block[:]) == "PWS3-EOFPWS3-EOF" {
-		return field, io.EOF
+		return field, EOF
 	}
 
 	r.tfishDecrypter.CryptBlocks(block[:], block[:])
@@ -150,4 +164,16 @@ func (r *Reader) ReadField() (Field, error) {
 	r.hmacHash.Write(field.Data)
 
 	return field, nil
+}
+
+// Verify the HMAC sum.
+func (r *Reader) Verify() error {
+	var filehmac [32]byte
+	r.r.Read(filehmac[:])
+
+	if !hmac.Equal(filehmac[:], r.hmacHash.Sum(nil)) {
+		return ErrHMACFailed
+	}
+
+	return nil
 }

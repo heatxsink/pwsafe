@@ -2,10 +2,8 @@ package pwsafe
 
 import (
 	"bytes"
-	"crypto/hmac"
 	"encoding/binary"
 	"fmt"
-	"io"
 	"log"
 	"os"
 	"time"
@@ -13,6 +11,7 @@ import (
 	"github.com/satori/go.uuid"
 )
 
+// Parse a psafe3 file
 func ParseFile(inputfile, password string) (*Safe, error) {
 	var safe Safe
 	infile, err := os.Open(inputfile)
@@ -34,20 +33,17 @@ func ParseFile(inputfile, password string) (*Safe, error) {
 
 	for {
 		record, rerr := readRecord(r)
-		if rerr != nil && rerr == io.EOF {
-			break
+		if rerr != nil && rerr == EOF {
+			if verr := r.Verify(); verr != nil {
+				return nil, verr
+			}
+			return &safe, nil
 		} else if rerr != nil {
 			return nil, rerr
 		}
 		safe.Records = append(safe.Records, record)
 	}
 
-	var filehmac [32]byte
-	infile.Read(filehmac[:])
-
-	if !hmac.Equal(filehmac[:], r.hmacHash.Sum(nil)) {
-		return nil, ErrHMACFailed
-	}
 	return &safe, nil
 }
 

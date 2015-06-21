@@ -2,6 +2,7 @@ package pwsafe
 
 import "crypto/sha256"
 
+// Compute stretched key similar to how PBKDF works
 func computeStretchKey(salt, password []byte, iterations int) []byte {
 	sha := sha256.New()
 
