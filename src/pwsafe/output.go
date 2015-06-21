@@ -92,7 +92,7 @@ func OutputFile(outputfile, password string, safe Safe) error {
 	outfile.Write(blockData[:])
 
 	for _, record := range safe.Records {
-		id := uuid.NewV1()
+		id := uuid.NewV4()
 		writeField(outfile, engine, hmacEngine, 0x01, id.Bytes())
 		writeField(outfile, engine, hmacEngine, 0x02, []byte(record.Group))
 		writeField(outfile, engine, hmacEngine, 0x03, []byte(record.Title))

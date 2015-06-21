@@ -1,6 +1,10 @@
 package pwsafe
 
-import "time"
+import (
+	"time"
+
+	"github.com/satori/go.uuid"
+)
 
 type Headers struct {
 	VersionMajor, VersionMinor uint8
@@ -11,7 +15,7 @@ type Headers struct {
 }
 
 type Record struct {
-	UUID         [16]byte
+	UUID         uuid.UUID
 	Group        string
 	Title        string
 	Username     string

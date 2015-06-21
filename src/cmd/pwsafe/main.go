@@ -241,7 +241,7 @@ Main:
 
 func getRecordDetail(record pwsafe.Record) string {
 	return strings.Join([]string{
-		fmt.Sprintf("    UUID: %v", record.UUID),
+		fmt.Sprintf("    UUID: %v", record.UUID.String()),
 		fmt.Sprintf("[g] Group: %s", record.Group),
 		fmt.Sprintf("[t] Title: %s", record.Title),
 		fmt.Sprintf("[u] Username: %s", record.Username),

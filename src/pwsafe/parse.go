@@ -9,6 +9,8 @@ import (
 	"log"
 	"os"
 	"time"
+
+	"github.com/satori/go.uuid"
 )
 
 func ParseFile(inputfile, password string) (*Safe, error) {
@@ -100,7 +102,11 @@ func readRecord(r *Reader) (Record, error) {
 		//pretty.Println("Rec Field", ftype, fdata, string(fdata))
 		switch field.Type {
 		case RecTypeUUID:
-			copy(record.UUID[:], field.Data)
+			id, uerr := uuid.FromBytes(field.Data)
+			if uerr != nil {
+				return record, uerr
+			}
+			record.UUID = id
 		case RecTypeGroup:
 			record.Group = string(field.Data)
 		case RecTypeTitle:
