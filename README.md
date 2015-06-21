@@ -1,6 +1,6 @@
 # Password Safe
 
-Read/Write original [Password Safe](http://pwsafe.org) v3 files.
+Read/Write [Password Safe](http://pwsafe.org) v3 files.
 
 ## Build
 
